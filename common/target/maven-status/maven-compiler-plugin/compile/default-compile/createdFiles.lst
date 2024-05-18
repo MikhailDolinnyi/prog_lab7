@@ -1,0 +1,16 @@
+ru\mikhail\models\Coordinates.class
+ru\mikhail\network\ResponseStatus.class
+ru\mikhail\network\User.class
+ru\mikhail\models\Chapter.class
+ru\mikhail\models\FieldValidator.class
+ru\mikhail\models\SpaceMarine.class
+ru\mikhail\utility\OutputColors.class
+ru\mikhail\exceptions\InvalidFormException.class
+ru\mikhail\exceptions\CommandRuntimeException.class
+ru\mikhail\models\Weapon.class
+ru\mikhail\network\Response.class
+ru\mikhail\exceptions\IllegalArgumentsException.class
+ru\mikhail\exceptions\ExitException.class
+ru\mikhail\exceptions\NoCommandException.class
+ru\mikhail\network\Request.class
+ru\mikhail\exceptions\FIleFieldException.class

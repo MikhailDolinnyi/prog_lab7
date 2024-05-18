@@ -1,0 +1,11 @@
+add
+Robert
+53
+64
+50
+none
+353
+grav_gun
+moon
+4
+execute_script C:\Users\MrSva\Desktop\Documents\2-nd_Sem\PROG\lab7\script.txt
