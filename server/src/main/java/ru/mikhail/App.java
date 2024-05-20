@@ -14,7 +14,7 @@ import java.util.List;
 public class App extends Thread {
 
 
-    public static int PORT = 2028;
+    public static int PORT = 6734;
     public static final Logger rootLogger = LogManager.getLogger(App.class);
 
 

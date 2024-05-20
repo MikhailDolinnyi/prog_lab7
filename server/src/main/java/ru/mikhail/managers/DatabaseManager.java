@@ -3,6 +3,7 @@ package ru.mikhail.managers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
+import ru.mikhail.App;
 import ru.mikhail.models.Chapter;
 import ru.mikhail.models.Coordinates;
 import ru.mikhail.models.SpaceMarine;
@@ -15,10 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 public class DatabaseManager {
 
@@ -31,9 +29,9 @@ public class DatabaseManager {
     private static final Logger databaseLogger = (Logger) LogManager.getLogger(DatabaseManager.class);
 
     public static final String HASHING_ALGORITHM = "SHA-512";
-    public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/lab7";
-    public static final String DATABASE_URL_HELIOS = "jdbc:postgresql://localhost:5432/lab7";
-    public static final String DATABASE_CONFIG_PATH = "C:\\Users\\MrSva\\Desktop\\Documents\\2-nd_Sem\\PROG\\lab7\\server\\config.cfg";
+    public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/studs";
+    public static final String DATABASE_URL_HELIOS = "jdbc:postgresql://pg:5432/studs";
+    public static final String DATABASE_CONFIG_PATH = Objects.requireNonNull(App.class.getClassLoader().getResource("config_to_server.cfg")).getPath();
 
     public DatabaseManager() {
         try {

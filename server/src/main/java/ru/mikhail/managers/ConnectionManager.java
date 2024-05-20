@@ -116,7 +116,6 @@ public class ConnectionManager implements Runnable {
         } catch (InvalidClassException | NotSerializableException exception) {
             connectionManagerLogger.error("Произошла ошибка при отправке данных на клиент!");
         } catch (IOException exception) {
-            connectionManagerLogger.error("Произошла ошибка прb передачи данных");
         }
     }
 
