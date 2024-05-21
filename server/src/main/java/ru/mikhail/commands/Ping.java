@@ -8,7 +8,7 @@ import ru.mikhail.network.ResponseStatus;
 
 /**
  * Команда 'ping'
- * пингануть сервер
+ * пингануть сервак
  */
 public class Ping extends Command {
     public Ping() {

@@ -19,7 +19,7 @@ public class ExecuteManager extends ConsoleInput implements UserInput {
     }
 
     public static File getFile() {
-        return new File(pathQueue.getLast());
+        return new File(pathQueue.getFirst());
     }
 
     public static String readLine() throws IOException {
@@ -42,5 +42,13 @@ public class ExecuteManager extends ConsoleInput implements UserInput {
         return pathQueue.contains(new File(path).getAbsolutePath());
     }
 
+    @Override
+    public String nextLine() {
+        try {
+            return readLine();
+        } catch (IOException | NullPointerException e) {
+            return "";
+        }
+    }
 
 }

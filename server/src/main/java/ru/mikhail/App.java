@@ -21,7 +21,7 @@ public class App extends Thread {
     public static void main(String[] args) {
         CollectionManager collectionManager = new CollectionManager();
 
-        rootLogger.info("----------------------ЗАПУСК СЕРВЕРА--------------------------------");
+        rootLogger.info("¯\\_(ツ)_/¯¯\\_(ツ)_/¯(◕‿◕)ЗАПУСК СЕРВЕРА В КОСМОС(◕‿◕)¯\\_(ツ)_/¯¯\\_(ツ)_/¯");
 
 
         CommandManager commandManager = new CommandManager(DatabaseHandler.getDatabaseManager());

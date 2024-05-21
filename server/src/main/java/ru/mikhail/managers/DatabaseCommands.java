@@ -28,28 +28,11 @@ public class DatabaseCommands {
                 salt TEXT
             );
             """;
-    public static final String addUser = """
-            INSERT INTO users(login, password, salt) VALUES (?, ?, ?);""";
-
-    public static final String getUser = """
-            SELECT * FROM users WHERE (login = ?);""";
 
     public static final String addObject = """
             INSERT INTO spacemarine(name, cord_x, cord_y, creation_date,health,achievements,height,weapon_type,chapter_name,chapter_marines_count, owner_login)
             VALUES (?,?,?,?,?,?,?,?,?,?,?)
             RETURNING id;
-            """;
-
-    public static final String getAllObjects = """
-            SELECT * FROM spacemarine;
-            """;
-
-    public static final String deleteUserOwnedObjects = """
-            DELETE FROM spacemarine WHERE (owner_login = ?) AND (id = ?) RETURNING id;
-            """;
-
-    public static final String deleteUserObject = """
-            DELETE FROM spacemarine WHERE (owner_login = ?) AND (id = ?) RETURNING id;
             """;
 
     public static final String updateUserObject = """
@@ -59,4 +42,25 @@ public class DatabaseCommands {
             WHERE (id = ?) AND (owner_login = ?)
             RETURNING id;
             """;
+
+    public static final String getAllObjects = """
+            SELECT * FROM spacemarine;
+            """;
+
+    public static final String addUser = """
+            INSERT INTO users(login, password, salt) VALUES (?, ?, ?);""";
+
+    public static final String getUser = """
+            SELECT * FROM users WHERE (login = ?);""";
+
+
+    public static final String deleteUserOwnedObjects = """
+            DELETE FROM spacemarine WHERE (owner_login = ?) AND (id = ?) RETURNING id;
+            """;
+
+    public static final String deleteUserObject = """
+            DELETE FROM spacemarine WHERE (owner_login = ?) AND (id = ?) RETURNING id;
+            """;
+
+
 }

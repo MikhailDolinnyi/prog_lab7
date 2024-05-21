@@ -90,7 +90,7 @@ public class ConnectionManager implements Runnable {
                         Request finalUserRequest = userRequest;
                         cachedThreadPool.submit(() -> {
                             try {
-                                FutureManager.addNewFixedThreadPoolFuture(
+                                PoolManager.addNewFixedThreadPoolFuture(
                                         Executors.newSingleThreadExecutor().submit(
                                                 new RequestHandler(commandManager, finalUserRequest, clientWriter)
                                         )

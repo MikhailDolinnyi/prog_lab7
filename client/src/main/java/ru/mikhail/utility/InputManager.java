@@ -148,23 +148,12 @@ public class InputManager {
                 if (userCommand[0].equals("execute_script")) {
                     if (ExecuteManager.fileRepeat(userCommand[1])) {
                         console.printError("Найдена рекурсия по пути " + new File(userCommand[1]).getAbsolutePath());
-
                     }
                 } else if (commandManager.containsCommand(userCommand[0])) {
                     console.println(OutputColors.toColor("Выполнение команды " + userCommand[0], OutputColors.YELLOW));
                     SpaceMarine spaceMarine = commandManager.execute(commandManager.getCommand(userCommand[0]), userCommand[1]);
-                    Response response = client.sendAndAskResponse(new Request(userCommand[0].trim(), userCommand[1].trim(), user));
+                    Response response = client.sendAndAskResponse(new Request(userCommand[0].trim(), userCommand[1].trim(), user, spaceMarine));
                     this.printResponse(response);
-                    switch (response.getStatus()) {
-                        case EXIT -> throw new ExitException();
-                        case EXECUTE_SCRIPT -> {
-                            this.fileExecution(response.getResponse());
-                            ExecuteManager.popRecursion();
-                        }
-                        default -> {
-                        }
-                    }
-//
                 } else {
                     console.println(OutputColors.toColor("Выполнение команды " + userCommand[0], OutputColors.YELLOW));
                     Response response = client.sendAndAskResponse(new Request(userCommand[0].trim(), userCommand[1].trim(), user));

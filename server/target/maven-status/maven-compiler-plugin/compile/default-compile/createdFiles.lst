@@ -2,6 +2,7 @@ ru\mikhail\commands\Clear.class
 ru\mikhail\managers\CollectionManager.class
 ru\mikhail\commands\Register.class
 ru\mikhail\managers\ConnectionManagerPool.class
+ru\mikhail\managers\PoolManager.class
 ru\mikhail\commands\RemoveLower.class
 ru\mikhail\managers\HistoryCommand.class
 ru\mikhail\commands\UpdateId$1NoSuchId.class
@@ -14,7 +15,6 @@ ru\mikhail\managers\CommandManager.class
 ru\mikhail\commands\Command.class
 ru\mikhail\utility\Server.class
 ru\mikhail\commands\Show.class
-ru\mikhail\managers\FutureManager.class
 ru\mikhail\commands\AddElement.class
 ru\mikhail\commands\CollectionEditor.class
 ru\mikhail\commands\RemoveById.class

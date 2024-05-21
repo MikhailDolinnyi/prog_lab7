@@ -7,7 +7,7 @@ import ru.mikhail.App;
 import ru.mikhail.managers.CommandManager;
 import ru.mikhail.managers.ConnectionManager;
 import ru.mikhail.managers.DatabaseManager;
-import ru.mikhail.managers.FutureManager;
+import ru.mikhail.managers.PoolManager;
 
 public class Server {
     private final int port;
@@ -27,12 +27,12 @@ public class Server {
     public void run() {
 
 
-        rootLogger.info("--------------------------------------------------------------------");
-        rootLogger.info("-----------------СЕРВЕР УСПЕШНО ЗАПУЩЕН-----------------------------");
-        rootLogger.info("--------------------------------------------------------------------");
+
+        rootLogger.info("(_!_)(_!_)(_!_)(_!_)(_!_)СЕРВЕР ЗАПУЩЕН(_!_)(_!_)(_!_)(_!_)(_!_)");
+
 
         while (true) {
-            FutureManager.checkAllFutures();
+            PoolManager.checkAllFutures();
             Thread connectionThread = new Thread(new ConnectionManager(commandManager, databaseManager, port));
             connectionThread.start();
 
