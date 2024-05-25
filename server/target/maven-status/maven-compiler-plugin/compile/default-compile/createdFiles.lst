@@ -4,6 +4,7 @@ ru\mikhail\commands\Register.class
 ru\mikhail\managers\ConnectionManagerPool.class
 ru\mikhail\managers\PoolManager.class
 ru\mikhail\commands\RemoveLower.class
+ru\mikhail\commands\AddToDB.class
 ru\mikhail\managers\HistoryCommand.class
 ru\mikhail\commands\UpdateId$1NoSuchId.class
 ru\mikhail\utility\RequestHandler.class
