@@ -1,6 +1,7 @@
 package ru.mikhail.managers;
 
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import ru.mikhail.App;
@@ -20,7 +21,7 @@ import java.util.*;
 
 public class DatabaseManager {
 
-    private Connection connection;
+    private BasicDataSource dataSource;
     private MessageDigest md;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrs" +
@@ -37,60 +38,86 @@ public class DatabaseManager {
         try {
             md = MessageDigest.getInstance(HASHING_ALGORITHM);
 
-            this.connect();
+            // Настройка пула соединений
+            dataSource = new BasicDataSource();
+            Properties info = new Properties();
+            info.load(new FileInputStream(DATABASE_CONFIG_PATH));
+            dataSource.setUrl(DATABASE_URL);
+            dataSource.setUsername(info.getProperty("user"));
+            dataSource.setPassword(info.getProperty("password"));
+
+            databaseLogger.info("Успешно настроен пул соединений");
+
             this.createMainBase();
         } catch (SQLException e) {
             databaseLogger.warn("Ошибка при исполнении изначального запроса либо таблицы уже созданы");
         } catch (NoSuchAlgorithmException e) {
             databaseLogger.fatal("Такого алгоритма нет!");
+        } catch (IOException e) {
+            databaseLogger.fatal("Ошибка при загрузке файла конфигурации базы данных");
         }
     }
 
-    public void connect() {
-        Properties info = null;
-        try {
-            info = new Properties();
-            info.load(new FileInputStream(DATABASE_CONFIG_PATH));
-            connection = DriverManager.getConnection(DATABASE_URL, info);
-            databaseLogger.info("Успешно подключен к базе данных");
-        } catch (SQLException | IOException e) {
-            try {
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
 
-                connection = DriverManager.getConnection(DATABASE_URL_HELIOS, info);
-            } catch (SQLException ex) {
-                databaseLogger.fatal("Невозможно подключиться к базе данных");
-                databaseLogger.debug(e);
-                databaseLogger.debug(ex);
-                System.exit(1);
-            }
+    public void releaseConnection(Connection connection) throws SQLException {
+        if (connection != null) {
+            connection.close();
         }
     }
+
+//    public void connect() {
+//        Properties info = null;
+//        try {
+//            info = new Properties();
+//            info.load(new FileInputStream(DATABASE_CONFIG_PATH));
+//            connection = DriverManager.getConnection(DATABASE_URL, info);
+//            databaseLogger.info("Успешно подключен к базе данных");
+//        } catch (SQLException | IOException e) {
+//            try {
+//
+//                connection = DriverManager.getConnection(DATABASE_URL_HELIOS, info);
+//            } catch (SQLException ex) {
+//                databaseLogger.fatal("Невозможно подключиться к базе данных");
+//                databaseLogger.debug(e);
+//                databaseLogger.debug(ex);
+//                System.exit(1);
+//            }
+//        }
+//    }
 
     public void createMainBase() throws SQLException {
-        connection
-                .prepareStatement(DatabaseCommands.allTablesCreation)
-                .execute();
-        databaseLogger.info("Таблицы созданы");
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(DatabaseCommands.allTablesCreation)) {
+            statement.execute();
+            databaseLogger.info("Таблицы созданы");
+        }
     }
+
 
     public void addUser(User user) throws SQLException {
         String login = user.name();
         String salt = this.generateRandomString();
         String pass = PEPPER + user.password() + salt;
 
-        PreparedStatement ps = connection.prepareStatement(DatabaseCommands.addUser);
-        if (this.checkExistUser(login)) throw new SQLException();
-        ps.setString(1, login);
-        ps.setString(2, this.getSHA512Hash(pass));
-        ps.setString(3, salt);
-        ps.execute();
-        databaseLogger.info("Добавлен юзер " + user);
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.addUser)) {
+            if (this.checkExistUser(login)) throw new SQLException();
+            ps.setString(1, login);
+            ps.setString(2, this.getSHA512Hash(pass));
+            ps.setString(3, salt);
+            ps.execute();
+            databaseLogger.info("Добавлен юзер " + user);
+        }
     }
 
+
     public boolean confirmUser(User inputUser) {
-        try {
+        try (Connection connection = getConnection();
+             PreparedStatement getUser = connection.prepareStatement(DatabaseCommands.getUser)) {
             String login = inputUser.name();
-            PreparedStatement getUser = connection.prepareStatement(DatabaseCommands.getUser);
             getUser.setString(1, login);
             ResultSet resultSet = getUser.executeQuery();
             if (resultSet.next()) {
@@ -107,20 +134,28 @@ public class DatabaseManager {
         }
     }
 
-    public boolean checkExistUser(String login) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(DatabaseCommands.getUser);
-        ps.setString(1, login);
-        ResultSet resultSet = ps.executeQuery();
-        return resultSet.next();
+
+    public boolean checkExistUser(String login) {
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.getUser)) {
+            ps.setString(1, login);
+            ResultSet resultSet = ps.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            databaseLogger.error("Ошибка при проверке существования пользователя");
+            databaseLogger.debug(e);
+            return false;
+        }
     }
+
 
     // Метод возвращает -1 при ошибке добавления объекта
     public int addObject(SpaceMarine spaceMarine, User user) {
-        try {
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.addObject)) {
             LocalDateTime creationDateTime = spaceMarine.getCreationDate();
             Timestamp timestamp = Timestamp.valueOf(creationDateTime);
 
-            PreparedStatement ps = connection.prepareStatement(DatabaseCommands.addObject);
             ps.setString(1, spaceMarine.getName());
             ps.setDouble(2, spaceMarine.getCoordinates().getX());
             ps.setDouble(3, spaceMarine.getCoordinates().getY());
@@ -147,9 +182,10 @@ public class DatabaseManager {
         }
     }
 
+
     public boolean updateObject(int id, SpaceMarine spaceMarine, User user) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(DatabaseCommands.updateUserObject);
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.updateUserObject)) {
             LocalDateTime creationDateTime = spaceMarine.getCreationDate();
             Timestamp timestamp = Timestamp.valueOf(creationDateTime);
 
@@ -166,33 +202,35 @@ public class DatabaseManager {
 
             ps.setInt(11, id);
             ps.setString(12, user.name());
-            ResultSet resultSet = ps.executeQuery();
-            System.out.println(resultSet);
-            return resultSet.next();
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
+            databaseLogger.error("Ошибка при обновлении объекта");
             databaseLogger.debug(e);
             return false;
         }
     }
 
+
     public boolean deleteObject(int id, User user) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(DatabaseCommands.deleteUserObject);
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.deleteUserObject)) {
             ps.setString(1, user.name());
             ps.setInt(2, id);
-            ResultSet resultSet = ps.executeQuery();
-            return resultSet.next();
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            databaseLogger.error("Объект удалить не удалось");
+            databaseLogger.error("Ошибка при удалении объекта");
             databaseLogger.debug(e);
             return false;
         }
     }
 
     public boolean deleteAllObjects(User user, List<Integer> ids) {
-        try {
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.deleteUserOwnedObjects)) {
             for (Integer id : ids) {
-                PreparedStatement ps = connection.prepareStatement(DatabaseCommands.deleteUserOwnedObjects);
                 ps.setString(1, user.name());
                 ps.setInt(2, id);
                 ps.executeQuery();
@@ -207,9 +245,10 @@ public class DatabaseManager {
     }
 
     public PriorityQueue<SpaceMarine> loadCollection() {
-        try {
-            PreparedStatement ps = connection.prepareStatement(DatabaseCommands.getAllObjects);
-            ResultSet resultSet = ps.executeQuery();
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(DatabaseCommands.getAllObjects);
+             ResultSet resultSet = ps.executeQuery()) {
+
             PriorityQueue<SpaceMarine> collection = new PriorityQueue<>();
             while (resultSet.next()) {
                 collection.add(new SpaceMarine(
@@ -227,7 +266,6 @@ public class DatabaseManager {
                         new Chapter(
                                 resultSet.getString("chapter_name"),
                                 resultSet.getInt("chapter_marines_count")
-
                         ),
                         resultSet.getString("owner_login")
                 ));
@@ -239,6 +277,7 @@ public class DatabaseManager {
             return new PriorityQueue<>();
         }
     }
+
 
     private String generateRandomString() {
         Random random = new Random();
