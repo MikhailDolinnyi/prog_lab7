@@ -43,8 +43,8 @@ public class ConnectionManager implements Runnable {
     @Override
     public void run() {
 
-        Request userRequest = null;
-        Response responseToUser = null;
+        Request userRequest;
+        Response responseToUser;
         try {
             DatagramPacket receivePacket;
             serverSocket = new DatagramSocket(port);

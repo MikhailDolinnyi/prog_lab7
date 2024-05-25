@@ -7,7 +7,6 @@ import ru.mikhail.managers.CollectionManager;
 import ru.mikhail.network.Request;
 import ru.mikhail.network.Response;
 import ru.mikhail.network.ResponseStatus;
-import ru.mikhail.utility.DatabaseHandler;
 
 
 /**
@@ -30,17 +29,18 @@ public class AddElement extends Command implements CollectionEditor {
      * @throws IllegalArgumentsException неверные аргументы команды
      */
     @Override
-    public Response execute(Request request) throws IllegalArgumentsException, InvalidFormException{
+    public Response execute(Request request) throws IllegalArgumentsException, InvalidFormException {
         if (!request.getArgs().isBlank()) throw new IllegalArgumentsException();
         if (request.getObject() == null) {
             return new Response(ResponseStatus.ERROR, "Не могу добавить обжект");
         }
-        int new_id = DatabaseHandler.getDatabaseManager().addObject(request.getObject(), request.getUser());
-        if (new_id == -1) return new Response(ResponseStatus.ERROR, "Объект добавить не удалось");
-        request.getObject().setId((long) new_id);
-        request.getObject().setUserLogin(request.getUser().name());
-        collectionManager.addElement(request.getObject());
-        return new Response(ResponseStatus.OK, "Объект успешно добавлен");
+//        int new_id = DatabaseHandler.getDatabaseManager().addObject(request.getObject(), request.getUser());
+//        if (new_id == -1) return new Response(ResponseStatus.ERROR, "Объект добавить не удалось");
+//        request.getObject().setId((long) new_id);
+//        request.getObject().setUserLogin(request.getUser().name());
+//        collectionManager.addElement(request.getObject());
+//        return new Response(ResponseStatus.OK, "Объект успешно добавлен");
+        return AddToDB.Add(request, collectionManager);
 
     }
 }

@@ -15,7 +15,7 @@ public class AddIfMin extends Command {
     }
 
     public SpaceMarine execute(String args) throws IllegalArgumentsException {
-        if (args.isBlank()) throw new IllegalArgumentsException();
+        if (!args.isBlank()) throw new IllegalArgumentsException();
         SpaceMarine spaceMarine = new AskSpaceMarine(console).build();
         if (!spaceMarine.validate()) throw new FIleFieldException();
         return spaceMarine;

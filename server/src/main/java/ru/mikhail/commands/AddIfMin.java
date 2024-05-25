@@ -8,7 +8,6 @@ import ru.mikhail.models.SpaceMarine;
 import ru.mikhail.network.Request;
 import ru.mikhail.network.Response;
 import ru.mikhail.network.ResponseStatus;
-import ru.mikhail.utility.DatabaseHandler;
 
 import java.util.Objects;
 
@@ -39,14 +38,15 @@ public class AddIfMin extends Command implements CollectionEditor {
                 .filter(Objects::nonNull)
                 .min(SpaceMarine::compareTo)
                 .orElse(null))) <= -1) {
-            int new_id = DatabaseHandler.getDatabaseManager().addObject(request.getObject(), request.getUser());
-            if (new_id == -1) return new Response(ResponseStatus.ERROR, "Объект добавить не удалось");
-            request.getObject().setId((long) new_id);
-            request.getObject().setUserLogin(request.getUser().name());
-            collectionManager.addElement(request.getObject());
-            return new Response(ResponseStatus.OK, "Объект успешно добавлен");
+            return AddToDB.Add(request, collectionManager);
+//            int new_id = DatabaseHandler.getDatabaseManager().addObject(request.getObject(), request.getUser());
+//            if (new_id == -1) return new Response(ResponseStatus.ERROR, "Объект добавить не удалось");
+//            request.getObject().setId((long) new_id);
+//            request.getObject().setUserLogin(request.getUser().name());
+//            collectionManager.addElement(request.getObject());
+//            return new Response(ResponseStatus.OK, "Объект успешно добавлен");
         }
-        return new Response(ResponseStatus.ERROR, "Элемент меньше максимального");
+        return new Response(ResponseStatus.ERROR, "Элемент больше минимального");
     }
 
 }

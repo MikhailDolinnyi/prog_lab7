@@ -8,6 +8,16 @@ Robert
 grav_gun
 moon
 4
+add_if_min
+Yakov
+567
+3458
+546
+34
+353
+grav_gun
+moon
+4
 remove_head
 add
 Robert

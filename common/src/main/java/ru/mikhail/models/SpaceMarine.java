@@ -248,10 +248,9 @@ public class SpaceMarine implements FieldValidator, Comparable<SpaceMarine>, Ser
                 OutputColors.toColor("achievements ", OutputColors.CYAN) + achievements + '\n' +
                 OutputColors.toColor("height: ", OutputColors.CYAN) + height + '\n' +
                 OutputColors.toColor("weaponType: ", OutputColors.CYAN) + weaponType + '\n' +
-                OutputColors.toColor("chapter: ", OutputColors.CYAN) + chapter +  '}' + '\n' +
+                OutputColors.toColor("chapter: ", OutputColors.CYAN) + chapter + '}' + '\n' +
                 OutputColors.toColor("userLogin = ", OutputColors.CYAN) + userLogin + '\n';
     }
-
 
 
 }
